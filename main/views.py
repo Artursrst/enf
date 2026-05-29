@@ -21,13 +21,13 @@ class IndexView(TemplateView):
         return TemplateResponse(request, self.template_name, context)
     
 class CatalogView(TemplateView):
-    template_name = 'main/base.html'
+    template = 'main/base.html'
 
     FILTER_MAPPING = {
-        'color':lambda queryset, value: queryset.filter(color_iexact=value),
+        'color':lambda queryset, value: queryset.filter(color__iexact=value),
         'min_price':lambda queryset, value: queryset.filter(price_gte=value),
         'max_price':lambda queryset, value: queryset.filter(price_lte=value),
-        'size':lambda queryset, value: queryset.filter(product_size__size__name=value),
+        'size':lambda queryset, value: queryset.filter(product_sizes__size__name=value),
     }
 
     def get_context_data(self, **kwargs):
@@ -44,7 +44,7 @@ class CatalogView(TemplateView):
         query = self.request.GET.get('q')
         if query:
             products = products.filter(
-                Q(name_icontains=query) | Q(description_icontains=query)
+                Q(name__icontains=query) | Q(description__icontains=query)
             )
 
         filter_params = {}
@@ -59,11 +59,11 @@ class CatalogView(TemplateView):
         filter_params['q'] = query or ''
 
         context.update({
-            'categories':categories,
-            'prodcuts':products,
-            'current_category':category_slug,
-            'filter_params':filter_params,
-            'sizes':Size.objects.all(),
+            'categories': categories,
+            'products': products,
+            'current_category': category_slug,
+            'filter_params': filter_params,
+            'sizes': Size.objects.all(),
             'search_query': query or ''
         })
 
@@ -95,8 +95,8 @@ class ProductDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         product = self.get_object()
         context['categories'] = Category.objects.all()
-        context['products'] = Product.objects.filter(
-            Category=product.category
+        context['related_products'] = Product.objects.filter(
+            category=product.category
         ).exclude(id=product.id)[:4]
         context['current_category'] = product.category.slug
         return context

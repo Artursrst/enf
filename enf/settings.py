@@ -34,8 +34,8 @@ ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'enfmag.ru', 'www.enfmag.ru']
 CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:8000',
     'http://localhost:8000',
-    'http://enfmag.ru',
-    'http://www.enfmag.ru',
+    'https://enfmag.ru',
+    'https://www.enfmag.ru',
 ]
 
 CSRF_COOKIE_SECURE = True
@@ -164,3 +164,6 @@ AUTH_USER_MODEL = 'users.CustomUser'
 # stripe listen --forward-to localhost:8000/payment/stripe/webhook/
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
 STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
+
+HELEKET_API_KEY  = os.getenv("HELEKET_API_KEY ")
+HELEKET_SECRET_KEY = os.getenv("HELEKET_SECRET_KEY")

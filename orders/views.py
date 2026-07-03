@@ -12,7 +12,7 @@ from cart.models import Cart
 from main.models import ProductSize
 from django.shortcuts import get_object_or_404
 from decimal import Decimal
-from payment.views import create_stripe_checkout_session
+from payment.views import create_stripe_checkout_session, create_heleket_payment
 
 
 @method_decorator(login_required(login_url='/users/login'), name='dispatch')
@@ -104,6 +104,16 @@ class ChekoutView(CartMixin, View):
 
                         return response
                     return redirect(checkout_session.url)
+                
+                elif payment_provider == 'heleket':
+                    payment = create_heleket_payment(order, request)
+                    cart.clear()
+                    if request.headers.get('HX-Request'):
+                        response = HttpResponse(status=200)
+                        response['HX-Redirect'] = payment['url']
+                        return response
+                    return redirect(payment['url'])
+
             except Exception as e:
                 order.delete()
                 context = {
